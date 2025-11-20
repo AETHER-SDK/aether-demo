@@ -9,5 +9,10 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs"
+  "type": "commonjs",
+  "dependencies": {
+    "aether-agent-sdk": "^1.0.5",
+    "axios": "^1.13.2",
+    "express": "^5.1.0"
+  }
 }
