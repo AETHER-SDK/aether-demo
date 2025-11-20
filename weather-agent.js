@@ -19,17 +19,15 @@ class WeatherAgent {
     async geocodeCity(city) {
         const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`;
         
-        this.log(`Geocoding city: "${city}"`, { url: geoUrl });
+        this.log(`Geocoding: ${city}`);
 
         try {
-            const response = await axios.get(geoUrl);
-            this.log('Geocoding response received', {
-                status: response.status,
-                data: response.data
+            const response = await axios.get(geoUrl, {
+                timeout: 10000,
+                headers: { 'User-Agent': 'WeatherAgent/1.0' }
             });
 
             if (!response.data.results || response.data.results.length === 0) {
-                this.log('No results found for city');
                 throw new Error(`City "${city}" not found`);
             }
 
@@ -41,53 +39,33 @@ class WeatherAgent {
                 country: place.country
             };
 
-            this.log('Coordinates extracted', result);
             return result;
 
         } catch (error) {
-            this.log('Geocoding error', {
-                message: error.message,
-                response: error.response?.data,
-                status: error.response?.status
-            });
-            throw error;
+            const errMsg = error.response?.data || error.message || 'Unknown error';
+            this.log('Geocoding error', errMsg);
+            throw new Error(`Geocoding failed: ${errMsg}`);
         }
     }
 
     async fetchWeather(lat, lon) {
         const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`;
         
-        this.log('Fetching weather', { 
-            lat, 
-            lon, 
-            url: weatherUrl 
-        });
+        this.log(`Fetching weather: ${lat}, ${lon}`);
 
         try {
             const response = await axios.get(weatherUrl);
-            this.log('Weather response received', {
-                status: response.status,
-                data: response.data
-            });
-
             return response.data.current_weather;
 
         } catch (error) {
-            this.log('Weather fetch error', {
-                message: error.message,
-                response: error.response?.data,
-                status: error.response?.status
-            });
+            this.log('Weather error', error.message);
             throw error;
         }
     }
 
     start() {
         this.app.get('/weather', async (req, res) => {
-            this.log('Request received', {
-                query: req.query,
-                headers: req.headers
-            });
+            this.log(`GET /weather - city: ${req.query.city || 'none'}, lat: ${req.query.lat || 'none'}, lon: ${req.query.lon || 'none'}`);
 
             try {
                 let lat = req.query.lat;
@@ -95,20 +73,17 @@ class WeatherAgent {
                 let cityInfo = null;
 
                 if (req.query.city) {
-                    this.log(`Searching for city: ${req.query.city}`);
                     cityInfo = await this.geocodeCity(req.query.city);
                     lat = cityInfo.lat;
                     lon = cityInfo.lon;
                 }
 
                 if (!lat || !lon) {
-                    this.log('Missing parameters', { lat, lon });
                     return res.status(400).json({ 
                         error: "Provide ?city=NAME or ?lat=XX&lon=YY" 
                     });
                 }
 
-                this.log('Fetching weather for coordinates', { lat, lon });
                 const weather = await this.fetchWeather(lat, lon);
 
                 const result = {
@@ -118,16 +93,11 @@ class WeatherAgent {
                     timestamp: new Date().toISOString()
                 };
 
-                this.log('Response sent', result);
+                this.log('Response: 200 OK');
                 res.json(result);
 
             } catch (err) {
-                this.log('ERROR 500', {
-                    message: err.message,
-                    stack: err.stack,
-                    response: err.response?.data
-                });
-
+                this.log(`ERROR: ${err.message}`);
                 res.status(500).json({ 
                     error: err.message,
                     details: err.response?.data || 'No details available'
@@ -136,7 +106,6 @@ class WeatherAgent {
         });
 
         this.app.get('/health', (req, res) => {
-            this.log('Health check');
             res.json({ status: 'ok', timestamp: new Date().toISOString() });
         });
 
