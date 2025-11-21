@@ -1,14 +1,18 @@
 {
   "name": "aether-demo",
   "version": "1.0.0",
-  "description": "",
+  "description": "AI Weather Agents with x402 Payment Protocol on Solana",
   "main": "index.js",
   "scripts": {
+    "start:weather": "node weather-agent-aether.js",
+    "start:customer": "node customer-agent-aether.js",
+    "start:simple-weather": "node weather-agent.js",
+    "start:simple-consumer": "node consumer-agent.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["aether", "solana", "x402", "ai-agents", "autonomous", "payments"],
+  "author": "4n0nn43x",
+  "license": "MIT",
   "type": "commonjs",
   "dependencies": {
     "aether-agent-sdk": "^1.0.5",
