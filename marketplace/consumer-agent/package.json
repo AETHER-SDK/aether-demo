@@ -1,0 +1,23 @@
+{
+  "name": "marketplace-consumer-demo",
+  "version": "1.0.0",
+  "description": "Demo AI agent consumer for Aether Marketplace",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts"
+  },
+  "dependencies": {
+    "@solana/web3.js": "^1.87.0",
+    "aether-agent-sdk": "file:../../../aether",
+    "bs58": "^5.0.0",
+    "dotenv": "^16.3.1",
+    "openai": "^4.20.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.3.0"
+  }
+}
