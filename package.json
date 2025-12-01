@@ -10,12 +10,19 @@
     "start:simple-consumer": "node consumer-agent.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["aether", "solana", "x402", "ai-agents", "autonomous", "payments"],
+  "keywords": [
+    "aether",
+    "solana",
+    "x402",
+    "ai-agents",
+    "autonomous",
+    "payments"
+  ],
   "author": "4n0nn43x",
   "license": "MIT",
   "type": "commonjs",
   "dependencies": {
-    "aether-agent-sdk": "^1.0.5",
+    "aether-agent-sdk": "file:../aether-sdk/aether-agent-sdk-3.0.1.tgz",
     "axios": "^1.13.2",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
